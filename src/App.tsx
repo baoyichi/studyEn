@@ -530,6 +530,7 @@ export default function App() {
               </div>
             ) : (
               <TranslationWorkspace
+                lessonNumber={lesson.number}
                 categories={currentLessonErrorCategories}
                 answers={translationAnswers}
                 saved={savedLesson === lesson.number}

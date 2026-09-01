@@ -347,6 +347,46 @@ button:disabled {
     12px "PingFang SC",
     sans-serif;
 }
+.error-notes {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #e8e0d9;
+  border-radius: 10px;
+  background: #fbf7f3;
+}
+.error-notes h5 {
+  margin: 3px 0 4px;
+  color: #6a483d;
+  font:
+    500 18px/1.2 "Newsreader", "PingFang SC", serif;
+}
+.error-notes p:not(.panel-label) {
+  margin: 0;
+  color: #8f8882;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.error-notes textarea {
+  min-height: 150px;
+  resize: vertical;
+  padding: 11px;
+  border: 1px solid #ded7d1;
+  border-radius: 7px;
+  outline: 0;
+  color: #31434a;
+  background: #fff;
+  font: 500 14px/1.55 "Newsreader", "PingFang SC", serif;
+}
+.error-notes textarea:focus {
+  border-color: #d98a71;
+  box-shadow: 0 0 0 3px #f8e4dc;
+}
+.error-notes textarea::placeholder {
+  color: #bbb5af;
+  font: 12px/1.8 "PingFang SC", sans-serif;
+}
 @media (max-width: 680px) {
   .translation-workspace__header {
     align-items: stretch;

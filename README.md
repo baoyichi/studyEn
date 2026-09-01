@@ -1,20 +1,24 @@
-# 数字旅行邮票册
+# NCE 1 · Concept Lab
 
-一个移动端优先的本地旅行手帐 MVP：以一次旅行作为一页活页纸，在其中逐张制作照片邮票、拖动拼贴并保留旅行记忆。
+面向《新概念英语第一册》Lesson 73–143 的个人学习网站，帮助建立“听得懂、译得准、说得出”的日常学习节奏。
+
+## 功能
+
+- **听力 + 跟读**：使用公开 YouTube 英文朗读音频，支持播放、暂停与 0.5×、0.8×、1×、1.25× 倍速。
+- **课文阅读**：默认隐藏正文；单数课可在英文原文与中文译文间切换。内容按课从原书页面裁切，避免展示整份 PDF。
+- **汉译英**：每课提供 3 条核心句式练习。每条都有独立输入框，句式重点默认隐藏，点击眼睛图标后显示。
+- **本地保存**：汉译英答案和日历打卡信息均保存在浏览器 `localStorage`，再次进入同一课会自动回显。
+- **学习日历**：从 2026-09-01 至 2026-11-22，工作日与周六安排 Lesson 73–143；周日仅进行“错题复习”打卡。
+- **快速操作**：使用 Material UI Speed Dial 快速进入听力、汉译英或日历。
 
 ## 技术栈
 
-- React + Vite + TypeScript
-- React Router
-- Zustand（界面状态）
-- IndexedDB / idb（旅行资料和本机照片）
-- dnd-kit（触控拖动）
-- react-easy-crop（照片裁切预览）
-- Material UI（表单、弹层、操作按钮与比例切换）
+- React 19 + TypeScript + Vite
+- Material UI
+- YouTube IFrame Player API
+- Browser `localStorage`
 
-照片不会上传到服务器；浏览器清除站点数据后，本地旅行册也会被移除。
-
-## 本地启动
+## 本地运行
 
 需要 Node.js 20 或更高版本。
 
@@ -23,24 +27,17 @@ npm install
 npm run dev
 ```
 
-打开终端显示的本地地址。检查生产构建：
+终端会输出本地访问地址。生产检查：
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## 部署到 Vercel
+## 课文资源
 
-1. 将此目录推送到 GitHub、GitLab 或 Bitbucket。
-2. 在 Vercel 中导入该仓库。
-3. Framework Preset 选择 **Vite**（仓库内已包含对应构建配置）。
-4. 点击 Deploy；构建命令为 `npm run build`，输出目录为 `dist`。
+`public/lesson-pages/` 中保存了 Lesson 73–143 单数课的英文正文与中文译文裁切图。它们来自项目维护者提供的《新概念英语第一册》课文 PDF，仅供个人学习使用。
 
-## V1 范围
+## 部署
 
-已实现：旅行封面、新建旅行、单张图片邮票、横竖方比例、带锯齿边的裁切预览、EXIF 日期与 GPS 地点自动读取、本地保存、单页拼贴、触控拖拽、删除确认、自动重新排版，以及手机/iPad 布局。
-
-地点识别依赖原图保留 GPS EXIF；社交媒体转存的图片通常会移除这些信息。无法读取时仍可手动填写地点和日期。
-
-下一阶段适合接入 Supabase Authentication + Storage，实现帐号、跨设备同步与真实封面图；随后再考虑导出图片/PDF 和移动 App 壳。
+可部署到任何静态托管服务。Vercel 中选择 **Vite**，构建命令为 `npm run build`，输出目录为 `dist`。

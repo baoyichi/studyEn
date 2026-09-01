@@ -1,0 +1,289 @@
+:root {
+  font-family:
+    ui-sans-serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #26292d;
+  background: #f7f3ee;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+#root {
+  min-height: 100svh;
+}
+
+#youtube-audio {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.audio-tip {
+  position: relative;
+  margin: 19px 0 0 65px;
+  color: #aeb4b5;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.article-panel {
+  padding: 27px 30px;
+  background: #fffdf9;
+}
+.article-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.article-heading .panel-label {
+  margin-bottom: 5px;
+}
+.article-heading b {
+  font:
+    500 19px/1 "Newsreader",
+    "PingFang SC",
+    serif;
+}
+.article-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 9px;
+  border: 1px solid #e5c7ba;
+  border-radius: 7px;
+  color: #9d543e;
+  font-size: 11px;
+}
+.article-toggle svg {
+  font-size: 15px;
+}
+.article-closed {
+  margin: 45px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #ece5df;
+  color: #8d8984;
+  font-size: 11px;
+  line-height: 1.75;
+}
+.article-body {
+  margin-top: 20px;
+}
+.article-language {
+  display: flex;
+  gap: 5px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee7e0;
+}
+.article-language button {
+  padding: 5px 8px;
+  border-radius: 5px;
+  color: #99938e;
+  font-size: 10px;
+}
+.article-language button.selected {
+  color: #7e4939;
+  background: #f6e5dc;
+  font-weight: 700;
+}
+.article-body > p {
+  margin: 16px 0 0;
+  white-space: pre-line;
+  color: #3d4143;
+  font:
+    500 14px/1.85 "Newsreader",
+    "PingFang SC",
+    serif;
+}
+.article-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  border: 1px solid #e8e1da;
+  border-radius: 6px;
+  background: #fff;
+}
+.article-empty {
+  display: grid;
+  gap: 7px;
+  margin-top: 20px;
+  padding: 13px;
+  border-radius: 8px;
+  background: #f9f3ed;
+  color: #8d8882;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.article-empty b {
+  color: #a45d46;
+}
+
+@media (max-width: 780px) {
+  .article-panel {
+    padding: 24px;
+  }
+  .audio-tip {
+    margin-left: 0;
+  }
+}
+
+.translation-workspace {
+  max-width: 900px;
+}
+.translation-workspace__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.translation-workspace__header h4 {
+  margin: 0;
+  font:
+    500 25px/1.15 "Newsreader",
+    "PingFang SC",
+    serif;
+  letter-spacing: -0.03em;
+}
+.translation-intro {
+  margin: 10px 0 23px;
+  color: #8f8a84;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.save-answers,
+.saved {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 9px 11px;
+  border: 1px solid #e4c8bb;
+  border-radius: 7px;
+  color: #96513b;
+  font-size: 11px;
+}
+.saved {
+  color: #4f817a;
+  border-color: #c7ddd8;
+  background: #f0f8f6;
+}
+.save-answers svg,
+.saved svg {
+  font-size: 15px;
+}
+.translation-drills {
+  display: grid;
+  gap: 12px;
+}
+.translation-drill {
+  display: grid;
+  grid-template-columns: 28px minmax(210px, 0.9fr) minmax(250px, 1.1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e8e0d9;
+  border-radius: 10px;
+  background: #fffefa;
+}
+.drill-number {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  color: #b76045;
+  background: #fae7df;
+  font:
+    500 9px "DM Mono",
+    monospace;
+}
+.drill-copy {
+  display: grid;
+  gap: 5px;
+}
+.drill-copy b {
+  font:
+    500 14px/1.5 "PingFang SC",
+    sans-serif;
+}
+.tip-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 0;
+  color: #9a938d;
+  font:
+    10px "DM Mono",
+    monospace;
+  text-align: left;
+}
+.tip-toggle:hover {
+  color: #a55a43;
+}
+.tip-toggle svg {
+  font-size: 14px;
+}
+.translation-drill textarea {
+  min-height: 65px;
+  resize: vertical;
+  padding: 10px;
+  border: 1px solid #ded7d1;
+  border-radius: 7px;
+  outline: 0;
+  color: #31434a;
+  background: #fff;
+  font:
+    500 14px/1.45 "Newsreader",
+    serif;
+}
+.translation-drill textarea:focus {
+  border-color: #d98a71;
+  box-shadow: 0 0 0 3px #f8e4dc;
+}
+.translation-drill textarea::placeholder {
+  color: #bbb5af;
+  font:
+    12px "PingFang SC",
+    sans-serif;
+}
+@media (max-width: 680px) {
+  .translation-workspace__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .save-answers,
+  .saved {
+    align-self: flex-start;
+  }
+  .translation-drill {
+    grid-template-columns: 25px 1fr;
+  }
+  .translation-drill textarea {
+    grid-column: 1 / -1;
+  }
+}

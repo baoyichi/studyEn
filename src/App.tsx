@@ -7,6 +7,8 @@ import {
   SpeedDialAction,
   SpeedDialIcon,
   ThemeProvider,
+  ToggleButton,
+  ToggleButtonGroup,
   createTheme,
 } from "@mui/material";
 import HeadphonesRoundedIcon from "@mui/icons-material/HeadphonesRounded";
@@ -19,10 +21,8 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
-import {
-  TranslationWorkspace,
-  type TranslationDrill,
-} from "./components/TranslationWorkspace";
+import { TranslationWorkspace } from "./components/TranslationWorkspace";
+import { getErrorCategoriesForLesson } from "./data/errorDrills";
 import "./App.css";
 
 declare global {
@@ -156,68 +156,6 @@ const practice = [
     "as 引导时间状语",
   ],
 ];
-const drillAddOns = [
-  [
-    ["她对伦敦不太熟悉，因此迷了路。", "结果表达：and + 过去式"],
-    ["请问，您能告诉我去国王街怎么走吗？", "Can you tell me the way to …?"],
-  ],
-  [
-    ["这双鞋去年很时髦，但今年已经不流行了。", "be in fashion"],
-    ["你能给我找一双这样的鞋吗？", "get a pair for someone"],
-  ],
-  [
-    ["我牙疼得厉害，必须去看牙医。", "have a terrible + 名词"],
-    ["你应该每晚刷牙两次。", "should + 动词原形"],
-  ],
-  [
-    ["她在购物前先列了一张清单。", "make a shopping list"],
-    ["别忘了买些牛奶和面包。", "forget to do"],
-  ],
-  [
-    ["我们下周要去度假。", "be going to + 动词原形"],
-    ["他们已经订好了机票。", "现在完成时"],
-  ],
-  [
-    ["事故发生时，他正在开车。", "过去进行时"],
-    ["幸好没有人受伤。", "否定句"],
-  ],
-  [
-    ["这所房子正在出售。", "be for sale"],
-    ["如果价格合适，我们就买下它。", "条件句"],
-  ],
-  [
-    ["他买了一个小巧的蓝色手提箱。", "形容词顺序"],
-    ["箱子里装着什么？", "疑问句"],
-  ],
-  [
-    ["吉米每个月给我寄一张明信片。", "send somebody something"],
-    ["我刚刚收到他的来信。", "现在完成时"],
-  ],
-  [
-    ["我已经检查过作业了。", "现在完成时"],
-    ["这张试卷里有几处错误。", "there be"],
-  ],
-  [
-    ["这件外套比那件小一点。", "比较级"],
-    ["这是店里最贵的型号。", "最高级"],
-  ],
-  [
-    ["我们需要一些零钱坐公共汽车。", "some / any"],
-    ["你有二十便士的零钱吗？", "have got"],
-  ],
-  [
-    ["他讲的故事听起来难以置信。", "定语从句"],
-    ["有人正在敲门。", "现在进行时"],
-  ],
-  [
-    ["她正在等去澳大利亚的飞机。", "wait for"],
-    ["我们已经喝了两杯茶。", "数量表达"],
-  ],
-  [
-    ["火车穿过树林时，孩子们很兴奋。", "as 引导时间状语"],
-    ["不要在树林里乱扔垃圾。", "祈使句"],
-  ],
-];
 const lessons: Lesson[] = Array.from({ length: 71 }, (_, i) => {
   const n = 73 + i;
   const [chinese, english, focus] = practice[i % practice.length];
@@ -286,7 +224,7 @@ export default function App() {
     }
   });
   const [translationAnswers, setTranslationAnswers] = useState<
-    Record<string, string[]>
+    Record<string, string>
   >(() => {
     try {
       return JSON.parse(
@@ -301,18 +239,14 @@ export default function App() {
     targetTime = useRef(2188),
     pendingPlay = useRef(false);
   const lesson = lessons.find((x) => x.number === number) ?? lessons[0];
+  const currentLessonErrorCategories = getErrorCategoriesForLesson(
+    lesson.number,
+  );
   const scheduled = schedule.find((x) => x.lesson?.number === number);
   const articleImage =
     lesson.number % 2 === 1
       ? `/lesson-pages/l${lesson.number}-${articleLanguage === "english" ? "en" : "zh"}.jpg`
       : undefined;
-  const drills: TranslationDrill[] = [
-    { prompt: lesson.chinese, tip: lesson.focus },
-    ...drillAddOns[(lesson.number - 73) % drillAddOns.length].map(
-      ([prompt, tip]) => ({ prompt, tip }),
-    ),
-  ];
-  const answers = translationAnswers[String(lesson.number)] ?? ["", "", ""];
   useEffect(() => {
     localStorage.setItem("nce1-checks", JSON.stringify(checks));
   }, [checks]);
@@ -398,12 +332,8 @@ export default function App() {
           : [...list, task],
       };
     });
-  const updateAnswer = (index: number, value: string) =>
-    setTranslationAnswers((all) => {
-      const next = [...(all[String(lesson.number)] ?? ["", "", ""])];
-      next[index] = value;
-      return { ...all, [String(lesson.number)]: next };
-    });
+  const updateAnswer = (drillId: string, value: string) =>
+    setTranslationAnswers((all) => ({ ...all, [drillId]: value }));
   const saveAnswers = () => {
     localStorage.setItem(
       "nce1-translation-answers",
@@ -563,24 +493,18 @@ export default function App() {
                   </div>
                   {articleOpen && (
                     <div className="article-body">
-                      <div className="article-language">
-                        <button
-                          className={
-                            articleLanguage === "english" ? "selected" : ""
-                          }
-                          onClick={() => setArticleLanguage("english")}
-                        >
-                          英语原文
-                        </button>
-                        <button
-                          className={
-                            articleLanguage === "chinese" ? "selected" : ""
-                          }
-                          onClick={() => setArticleLanguage("chinese")}
-                        >
-                          中文译文
-                        </button>
-                      </div>
+                      <ToggleButtonGroup
+                        className="article-language"
+                        exclusive
+                        value={articleLanguage}
+                        aria-label="课文语言"
+                        onChange={(_, value: "english" | "chinese" | null) => {
+                          if (value) setArticleLanguage(value);
+                        }}
+                      >
+                        <ToggleButton value="english">英语原文</ToggleButton>
+                        <ToggleButton value="chinese">中文译文</ToggleButton>
+                      </ToggleButtonGroup>
                       {articleImage ? (
                         <img
                           className="article-image"
@@ -606,9 +530,8 @@ export default function App() {
               </div>
             ) : (
               <TranslationWorkspace
-                lessonNumber={lesson.number}
-                drills={drills}
-                answers={answers}
+                categories={currentLessonErrorCategories}
+                answers={translationAnswers}
                 saved={savedLesson === lesson.number}
                 onAnswerChange={updateAnswer}
                 onSave={saveAnswers}

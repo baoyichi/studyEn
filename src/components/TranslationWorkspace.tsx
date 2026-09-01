@@ -1,98 +1,177 @@
 import { useState } from "react";
+import Button from "@mui/material/Button";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-
-export type TranslationDrill = {
-  prompt: string;
-  tip: string;
-};
+import type { ErrorCategory } from "../data/errorDrills";
 
 type TranslationWorkspaceProps = {
-  lessonNumber: number;
-  drills: TranslationDrill[];
-  answers: string[];
+  categories: ErrorCategory[];
+  answers: Record<string, string>;
   saved: boolean;
-  onAnswerChange: (index: number, value: string) => void;
+  onAnswerChange: (drillId: string, value: string) => void;
   onSave: () => void;
 };
 
-/** Keeps writing practice focused: reveal a grammar hint only when needed. */
+type Detail = "focus" | "original";
+
+/**
+ * Each category targets one recurring output problem. Details stay hidden so
+ * the learner translates first instead of reading the answer or grammar cue.
+ */
 export function TranslationWorkspace({
-  lessonNumber,
-  drills,
+  categories,
   answers,
   saved,
   onAnswerChange,
   onSave,
 }: TranslationWorkspaceProps) {
-  const [visibleTips, setVisibleTips] = useState<Record<string, boolean>>({});
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    categories[0]?.id ?? "",
+  );
+  const [visibleDetails, setVisibleDetails] = useState<Record<string, boolean>>(
+    {},
+  );
+  const selectedCategory =
+    categories.find((category) => category.id === selectedCategoryId) ??
+    categories[0];
 
-  function toggleTip(index: number) {
-    const tipKey = `${lessonNumber}-${index}`;
-    setVisibleTips((current) => ({ ...current, [tipKey]: !current[tipKey] }));
+  function toggleDetail(drillId: string, detail: Detail) {
+    const detailKey = `${drillId}-${detail}`;
+    setVisibleDetails((current) => ({
+      ...current,
+      [detailKey]: !current[detailKey],
+    }));
+  }
+
+  function isDetailVisible(drillId: string, detail: Detail) {
+    return Boolean(visibleDetails[`${drillId}-${detail}`]);
+  }
+
+  if (!selectedCategory) {
+    return (
+      <div className="translate-panel translation-workspace">
+        <div className="translation-workspace__header">
+          <div>
+            <p className="panel-label">CHINESE TO ENGLISH · ERROR-LED PRACTICE</p>
+            <h4>围绕你的高频错因做专项练习</h4>
+          </div>
+        </div>
+        <div className="translation-empty">
+          <b>本课暂无错因专项</b>
+          <span>
+            当前 Lesson 的原文中没有筛出与你高频错因对应的句子；不从其他课补题。
+          </span>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="translate-panel translation-workspace">
       <div className="translation-workspace__header">
         <div>
-          <p className="panel-label">CHINESE TO ENGLISH · CORE PATTERNS</p>
-          <h4>用本课句式，把中文写成英文</h4>
+          <p className="panel-label">CHINESE TO ENGLISH · ERROR-LED PRACTICE</p>
+          <h4>围绕你的高频错因做专项练习</h4>
         </div>
-        <button className={saved ? "saved" : "save-answers"} onClick={onSave}>
+        <Button
+          className={saved ? "saved" : "save-answers"}
+          variant="outlined"
+          size="small"
+          onClick={onSave}
+          startIcon={saved ? <CheckRoundedIcon /> : undefined}
+        >
           {saved ? (
-            <>
-              <CheckRoundedIcon />
-              已保存
-            </>
+            "已保存"
           ) : (
-            "保存本课练习"
+            "保存专项练习"
           )}
-        </button>
+        </Button>
       </div>
 
       <p className="translation-intro">
-        先自己写，再通过课文阅读核对表达。答案会保存在此课，回看时自动显示。
+        只练当前 Lesson 中与你高频错因对应的原句。先完成翻译，需要时再查看提示或原文。
       </p>
 
-      <div className="translation-drills">
-        {drills.map((drill, index) => {
-          const tipKey = `${lessonNumber}-${index}`;
-          const isTipVisible = Boolean(visibleTips[tipKey]);
+      <div className="error-category-tabs" aria-label="错题类别">
+        {categories.map((category) => (
+          <Button
+            key={category.id}
+            className={category.id === selectedCategory.id ? "selected" : ""}
+            variant="outlined"
+            size="small"
+            onClick={() => setSelectedCategoryId(category.id)}
+          >
+            {category.title}
+          </Button>
+        ))}
+      </div>
 
-          return (
-            <div className="translation-drill" key={tipKey}>
-              <span className="drill-number">
-                {String(index + 1).padStart(2, "0")}
+      <div className="category-summary">
+        <b>{selectedCategory.title}</b>
+        <span>{selectedCategory.description}</span>
+      </div>
+
+      <div className="translation-drills">
+        {selectedCategory.drills.map((drill, index) => (
+          <div className="translation-drill" key={drill.id}>
+            <span className="drill-number">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="drill-copy">
+              <b>{drill.chinese}</b>
+              <span className="drill-actions">
+                <RevealButton
+                  visible={isDetailVisible(drill.id, "focus")}
+                  label="句式重点"
+                  onClick={() => toggleDetail(drill.id, "focus")}
+                />
+                <RevealButton
+                  visible={isDetailVisible(drill.id, "original")}
+                  label="英文原文"
+                  onClick={() => toggleDetail(drill.id, "original")}
+                />
               </span>
-              <span className="drill-copy">
-                <b>{drill.prompt}</b>
-                <button
-                  className="tip-toggle"
-                  type="button"
-                  onClick={() => toggleTip(index)}
-                  aria-label={isTipVisible ? "隐藏句式重点" : "显示句式重点"}
-                  title={isTipVisible ? "隐藏句式重点" : "显示句式重点"}
-                >
-                  {isTipVisible ? (
-                    <VisibilityOffRoundedIcon />
-                  ) : (
-                    <VisibilityRoundedIcon />
-                  )}
-                  <span>{isTipVisible ? drill.tip : "显示句式重点"}</span>
-                </button>
-              </span>
-              <textarea
-                value={answers[index] ?? ""}
-                onChange={(event) => onAnswerChange(index, event.target.value)}
-                placeholder="在这里输入你的英文表达…"
-                aria-label={`第 ${index + 1} 句英文输入`}
-              />
-            </div>
-          );
-        })}
+              {isDetailVisible(drill.id, "focus") && (
+                <small>{drill.focus}</small>
+              )}
+              {isDetailVisible(drill.id, "original") && (
+                <em>{drill.english}</em>
+              )}
+            </span>
+            <textarea
+              value={answers[drill.id] ?? ""}
+              onChange={(event) => onAnswerChange(drill.id, event.target.value)}
+              placeholder="在这里输入你的英文表达…"
+              aria-label={`第 ${index + 1} 句英文输入`}
+            />
+          </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+function RevealButton({
+  visible,
+  label,
+  onClick,
+}: {
+  visible: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      className="tip-toggle"
+      variant="text"
+      size="small"
+      onClick={onClick}
+      startIcon={
+        visible ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />
+      }
+    >
+      {visible ? `隐藏${label}` : label}
+    </Button>
   );
 }

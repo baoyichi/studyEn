@@ -314,6 +314,9 @@ button:disabled {
 .tip-toggle svg {
   font-size: 14px;
 }
+.tip-toggle span {
+  margin-right: 0;
+}
 
 .drill-copy em {
   color: #43575e;

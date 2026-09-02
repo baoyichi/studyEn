@@ -156,8 +156,8 @@ const practice = [
     "as 引导时间状语",
   ],
 ];
-const lessons: Lesson[] = Array.from({ length: 71 }, (_, i) => {
-  const n = 73 + i;
+const lessons: Lesson[] = Array.from({ length: 36 }, (_, i) => {
+  const n = 73 + i * 2;
   const [chinese, english, focus] = practice[i % practice.length];
   return {
     number: n,
@@ -196,6 +196,18 @@ const schedule = (() => {
   return out;
 })();
 const end = schedule.at(-1)!.date;
+const calendarMonths = Array.from(
+  { length: end.getMonth() - start.getMonth() + 1 },
+  (_, index) => start.getMonth() + index,
+);
+
+function getTodayLessonNumber() {
+  const todayKey = key(new Date());
+  return (
+    schedule.find((item) => key(item.date) === todayKey)?.lesson?.number ?? 73
+  );
+}
+
 const theme = createTheme({
   palette: { primary: { main: "#d76545" }, background: { default: "#f7f3ee" } },
   typography: {
@@ -205,7 +217,7 @@ const theme = createTheme({
 });
 
 export default function App() {
-  const [number, setNumber] = useState(73),
+  const [number, setNumber] = useState(getTodayLessonNumber),
     [tab, setTab] = useState<"listen" | "translate">("listen"),
     [drawer, setDrawer] = useState(false),
     [playing, setPlaying] = useState(false),
@@ -243,10 +255,7 @@ export default function App() {
     lesson.number,
   );
   const scheduled = schedule.find((x) => x.lesson?.number === number);
-  const articleImage =
-    lesson.number % 2 === 1
-      ? `/lesson-pages/l${lesson.number}-${articleLanguage === "english" ? "en" : "zh"}.jpg`
-      : undefined;
+  const articleImage = `/lesson-pages/l${lesson.number}-${articleLanguage === "english" ? "en" : "zh"}.jpg`;
   useEffect(() => {
     localStorage.setItem("nce1-checks", JSON.stringify(checks));
   }, [checks]);
@@ -341,7 +350,10 @@ export default function App() {
     );
     setSavedLesson(lesson.number);
   };
-  const complete = Object.values(checks).filter((x) => x.length === 4).length;
+  const complete = schedule.filter((item) => {
+    const expectedTaskCount = item.review ? 1 : tasks.length;
+    return (checks[key(item.date)] ?? []).length === expectedTaskCount;
+  }).length;
   const choose = (value: number) => {
     setArticleOpen(false);
     setNumber(value);
@@ -383,7 +395,7 @@ export default function App() {
           <div className="progress-card">
             <div className="ring">
               <strong>{complete}</strong>
-              <span>/ 83 天</span>
+              <span>/ {schedule.length} 天</span>
             </div>
             <div>
               <b>稳步前进</b>
@@ -505,20 +517,11 @@ export default function App() {
                         <ToggleButton value="english">英语原文</ToggleButton>
                         <ToggleButton value="chinese">中文译文</ToggleButton>
                       </ToggleButtonGroup>
-                      {articleImage ? (
-                        <img
-                          className="article-image"
-                          src={articleImage}
-                          alt={`Lesson ${lesson.number} ${articleLanguage === "english" ? "英语原文" : "中文译文"}`}
-                        />
-                      ) : (
-                        <div className="article-empty">
-                          <b>本课为配套练习</b>
-                          <span>
-                            单数课为课文页；双数课是语法与书面练习，请在相邻单数课中完成原文听读。
-                          </span>
-                        </div>
-                      )}
+                      <img
+                        className="article-image"
+                        src={articleImage}
+                        alt={`Lesson ${lesson.number} ${articleLanguage === "english" ? "英语原文" : "中文译文"}`}
+                      />
                     </div>
                   )}
                   {!articleOpen && (
@@ -562,7 +565,7 @@ export default function App() {
             </span>
           </div>
           <div className="calendars">
-            {[8, 9, 10].map((month) => (
+            {calendarMonths.map((month) => (
               <Month
                 key={month}
                 month={month}
@@ -580,7 +583,10 @@ export default function App() {
             <br />
             普通课文裸听理解大部分。
           </h2>
-          <span>71 个学习日 · 12 个复习日 · 每日 4 项小完成</span>
+          <span>
+            {lessons.length} 个学习日 ·
+            {schedule.filter((item) => item.review).length} 个复习日 · 每日 4 项小完成
+          </span>
         </section>
         <footer>为持续而设计 · 每一次勾选都算数</footer>
         <SpeedDial
@@ -665,7 +671,13 @@ function Month({
         <h3>
           2026 <b>{month + 1}月</b>
         </h3>
-        <span>{month === 8 ? "开始" : month === 10 ? "收尾" : "坚持"}</span>
+          <span>
+            {month === start.getMonth()
+              ? "开始"
+              : month === end.getMonth()
+                ? "收尾"
+                : "坚持"}
+          </span>
       </header>
       <div className="weekdays">
         {weekdays.map((x) => (

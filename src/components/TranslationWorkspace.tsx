@@ -65,16 +65,13 @@ export function TranslationWorkspace({
           onClick={onSave}
           startIcon={saved ? <CheckRoundedIcon /> : undefined}
         >
-          {saved ? (
-            "已保存"
-          ) : (
-            "保存专项练习"
-          )}
+          {saved ? "已保存" : "保存专项练习"}
         </Button>
       </div>
 
       <p className="translation-intro">
-        只练当前 Lesson 中与你高频错因对应的原句。先完成翻译，需要时再查看提示或原文。
+        只练当前 Lesson
+        中与你高频错因对应的原句。先完成翻译，需要时再查看提示或原文。
       </p>
 
       {selectedCategory ? (
@@ -152,12 +149,12 @@ export function TranslationWorkspace({
         <div>
           <p className="panel-label">ERROR SENTENCE NOTEBOOK</p>
           <h5 id="error-notes-title">错句拓展练习</h5>
-          <p>记录错句，再写近似变式、场景变式和自由造句。</p>
+          <p>记录错句，再写近似变式、场景变式。</p>
         </div>
         <textarea
           value={answers[noteId] ?? ""}
           onChange={(event) => onAnswerChange(noteId, event.target.value)}
-          placeholder={`错句：\n近似变式：\n场景变式：\n自由造句：`}
+          placeholder={`错句：\n近似变式：\n场景变式：`}
           aria-label={`Lesson ${lessonNumber} 错句拓展练习`}
         />
       </section>

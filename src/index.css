@@ -92,12 +92,7 @@ button:disabled {
 .article-body {
   margin-top: 20px;
 }
-.article-language {
-  display: flex;
-  gap: 5px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee7e0;
-}
+
 .article-language button {
   padding: 5px 8px;
   border-radius: 5px;
@@ -127,21 +122,6 @@ button:disabled {
   border-radius: 6px;
   background: #fff;
 }
-.article-empty {
-  display: grid;
-  gap: 7px;
-  margin-top: 20px;
-  padding: 13px;
-  border-radius: 8px;
-  background: #f9f3ed;
-  color: #8d8882;
-  font-size: 11px;
-  line-height: 1.65;
-}
-.article-empty b {
-  color: #a45d46;
-}
-
 @media (max-width: 780px) {
   .article-panel {
     padding: 24px;
@@ -360,7 +340,9 @@ button:disabled {
   margin: 3px 0 4px;
   color: #6a483d;
   font:
-    500 18px/1.2 "Newsreader", "PingFang SC", serif;
+    500 18px/1.2 "Newsreader",
+    "PingFang SC",
+    serif;
 }
 .error-notes p:not(.panel-label) {
   margin: 0;
@@ -377,7 +359,10 @@ button:disabled {
   outline: 0;
   color: #31434a;
   background: #fff;
-  font: 500 14px/1.55 "Newsreader", "PingFang SC", serif;
+  font:
+    500 14px/1.55 "Newsreader",
+    "PingFang SC",
+    serif;
 }
 .error-notes textarea:focus {
   border-color: #d98a71;
@@ -385,7 +370,9 @@ button:disabled {
 }
 .error-notes textarea::placeholder {
   color: #bbb5af;
-  font: 12px/1.8 "PingFang SC", sans-serif;
+  font:
+    12px/1.8 "PingFang SC",
+    sans-serif;
 }
 @media (max-width: 680px) {
   .translation-workspace__header {

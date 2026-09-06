@@ -219,6 +219,21 @@
   color: #938f89;
   margin-bottom: 3px;
 }
+.review-study-note {
+  display: grid;
+  gap: 3px;
+  margin: 0 0 18px;
+  padding: 11px 13px;
+  border-left: 3px solid #8d6f9c;
+  color: #7e706f;
+  background: #faf4fb;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.review-study-note b {
+  color: #705674;
+  font-size: 12px;
+}
 .tabs {
   display: flex;
   gap: 24px;

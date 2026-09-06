@@ -243,11 +243,21 @@ const calendarMonths = Array.from(
   (_, index) => start.getMonth() + index,
 );
 
-function getTodayLessonNumber() {
+function getTodaySchedule() {
   const todayKey = key(new Date());
-  return (
-    schedule.find((item) => key(item.date) === todayKey)?.lesson?.number ?? 73
-  );
+  return schedule.find((item) => key(item.date) === todayKey);
+}
+
+function getTodayLessonNumber() {
+  const todaySchedule = getTodaySchedule();
+  if (!todaySchedule) return 73;
+
+  const todayIndex = schedule.indexOf(todaySchedule);
+  for (let index = todayIndex; index >= 0; index -= 1) {
+    const scheduledItem = schedule[index];
+    if (scheduledItem?.lesson) return scheduledItem.lesson.number;
+  }
+  return 73;
 }
 
 const theme = createTheme({
@@ -260,7 +270,12 @@ const theme = createTheme({
 
 export default function App() {
   const [number, setNumber] = useState(getTodayLessonNumber),
-    [tab, setTab] = useState<"listen" | "translate">("listen"),
+    [tab, setTab] = useState<"listen" | "translate">(() =>
+      getTodaySchedule()?.review ? "translate" : "listen",
+    ),
+    [followingTodayPlan, setFollowingTodayPlan] = useState(() =>
+      Boolean(getTodaySchedule()),
+    ),
     [drawer, setDrawer] = useState(false),
     [playing, setPlaying] = useState(false),
     [rate, setRate] = useState(1),
@@ -303,7 +318,14 @@ export default function App() {
   const currentLessonErrorCategories = getErrorCategoriesForLesson(
     lesson.number,
   );
-  const scheduled = schedule.find((x) => x.lesson?.number === number);
+  const selectedLessonSchedule = schedule.find(
+    (item) => item.lesson?.number === number,
+  );
+  const todaySchedule = getTodaySchedule();
+  const displayedSchedule = followingTodayPlan
+    ? todaySchedule
+    : selectedLessonSchedule;
+  const isReviewDay = followingTodayPlan && Boolean(todaySchedule?.review);
   const articleImage = `/lesson-pages/l${lesson.number}-${articleLanguage === "english" ? "en" : "zh"}.jpg`;
   useEffect(() => {
     localStorage.setItem("nce1-checks", JSON.stringify(checks));
@@ -420,6 +442,7 @@ export default function App() {
     return (checks[key(item.date)] ?? []).length === expectedTaskCount;
   }).length;
   const choose = (value: number) => {
+    setFollowingTodayPlan(false);
     setArticleOpen(false);
     setNumber(value);
     document.querySelector("#learn")?.scrollIntoView({ behavior: "smooth" });
@@ -475,13 +498,21 @@ export default function App() {
         <section className="learning-section" id="learn">
           <div className="section-title">
             <p>01 · DAILY PRACTICE</p>
-            <h2>今日学习</h2>
+            <h2>{isReviewDay ? "今日复习" : "今日学习"}</h2>
             <span>
-              {scheduled
-                ? `${scheduled.date.getMonth() + 1} 月 ${scheduled.date.getDate()} 日 · 星期${weekdays[scheduled.date.getDay()]}`
+              {displayedSchedule
+                ? `${displayedSchedule.date.getMonth() + 1} 月 ${displayedSchedule.date.getDate()} 日 · 星期${weekdays[displayedSchedule.date.getDay()]}${displayedSchedule.review ? " · 错题复习" : ""}`
                 : "自选课程"}
             </span>
           </div>
+          {isReviewDay && (
+            <div className="review-study-note">
+              <b>周日不安排新课</b>
+              <span>
+                回看已保存的错句、近似变式和汉译英答案，完成日历中的“错题复习”即可。
+              </span>
+            </div>
+          )}
           <div className="tabs">
             <button
               className={tab === "listen" ? "active" : ""}
@@ -700,6 +731,7 @@ export default function App() {
                   key={item.number}
                   className={item.number === lesson.number ? "current" : ""}
                   onClick={() => {
+                    setFollowingTodayPlan(false);
                     setArticleOpen(false);
                     setNumber(item.number);
                     setDrawer(false);

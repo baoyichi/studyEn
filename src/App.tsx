@@ -156,6 +156,48 @@ const practice = [
     "as 引导时间状语",
   ],
 ];
+
+// Precise chapter starts from the English captions of the selected YouTube audio.
+const lessonAudioStarts: Record<number, number> = {
+  73: 2188.96,
+  75: 2268.72,
+  77: 2350.4,
+  79: 2433.76,
+  81: 2519.599,
+  83: 2595.68,
+  85: 2684.8,
+  87: 2752.079,
+  89: 2827.44,
+  91: 2911.68,
+  93: 3003.599,
+  95: 3065.68,
+  97: 3147.68,
+  99: 3229.2,
+  101: 3290.8,
+  103: 3384.64,
+  105: 3472.72,
+  107: 3556.559,
+  109: 3643.839,
+  111: 3730.4,
+  113: 3830.079,
+  115: 3909.359,
+  117: 3996.079,
+  119: 4078.559,
+  121: 4174.239,
+  123: 4246.08,
+  125: 4321.84,
+  127: 4394.96,
+  129: 4486.159,
+  131: 4578.88,
+  133: 4660.8,
+  135: 4756.159,
+  137: 4865.12,
+  139: 4957.52,
+  141: 5050.88,
+  143: 5161.92,
+};
+const finalLessonAudioEnd = 5255.56;
+
 const lessons: Lesson[] = Array.from({ length: 36 }, (_, i) => {
   const n = 73 + i * 2;
   const [chinese, english, focus] = practice[i % practice.length];
@@ -248,9 +290,16 @@ export default function App() {
   });
   const player = useRef<any>(null),
     ready = useRef(false),
-    targetTime = useRef(2188),
+    targetTime = useRef(lessonAudioStarts[73]),
+    segmentEndTime = useRef(lessonAudioStarts[75]),
     pendingPlay = useRef(false);
   const lesson = lessons.find((x) => x.number === number) ?? lessons[0];
+  const lessonIndex = lessons.findIndex((item) => item.number === lesson.number);
+  const nextLesson = lessons[lessonIndex + 1];
+  const audioStartTime = lessonAudioStarts[lesson.number];
+  const audioEndTime = nextLesson
+    ? lessonAudioStarts[nextLesson.number]
+    : finalLessonAudioEnd;
   const currentLessonErrorCategories = getErrorCategoriesForLesson(
     lesson.number,
   );
@@ -315,17 +364,33 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    const next = 2188 + (lesson.number - 73) * 42.5;
-    targetTime.current = next;
-    if (ready.current) player.current.seekTo(next, true);
-  }, [lesson.number]);
+    targetTime.current = audioStartTime;
+    segmentEndTime.current = audioEndTime;
+    if (ready.current) player.current.seekTo(audioStartTime, true);
+  }, [audioEndTime, audioStartTime]);
+  useEffect(() => {
+    const stopAtLessonEnd = window.setInterval(() => {
+      if (
+        ready.current &&
+        player.current?.getCurrentTime?.() >= segmentEndTime.current - 0.15
+      ) {
+        player.current.pauseVideo();
+      }
+    }, 250);
+    return () => window.clearInterval(stopAtLessonEnd);
+  }, []);
   const togglePlay = () => {
     if (!ready.current) {
       pendingPlay.current = true;
       return;
     }
     if (playing) player.current.pauseVideo();
-    else player.current.playVideo();
+    else {
+      if (player.current.getCurrentTime() >= segmentEndTime.current - 0.15) {
+        player.current.seekTo(targetTime.current, true);
+      }
+      player.current.playVideo();
+    }
   };
   const changeRate = (v: number) => {
     setRate(v);

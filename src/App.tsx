@@ -22,7 +22,7 @@ import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import { TranslationWorkspace } from "./components/TranslationWorkspace";
-import { getErrorCategoriesForLesson } from "./data/errorDrills";
+import { getTranslationPractice } from "./data/errorDrills";
 import "./App.css";
 
 declare global {
@@ -315,9 +315,7 @@ export default function App() {
   const audioEndTime = nextLesson
     ? lessonAudioStarts[nextLesson.number]
     : finalLessonAudioEnd;
-  const currentLessonErrorCategories = getErrorCategoriesForLesson(
-    lesson.number,
-  );
+  const translationPractice = getTranslationPractice(lesson.number);
   const selectedLessonSchedule = schedule.find(
     (item) => item.lesson?.number === number,
   );
@@ -630,7 +628,8 @@ export default function App() {
             ) : (
               <TranslationWorkspace
                 lessonNumber={lesson.number}
-                categories={currentLessonErrorCategories}
+                categories={translationPractice.categories}
+                practiceMode={translationPractice.mode}
                 answers={translationAnswers}
                 saved={savedLesson === lesson.number}
                 onAnswerChange={updateAnswer}

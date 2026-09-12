@@ -3,11 +3,12 @@ import Button from "@mui/material/Button";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
-import type { ErrorCategory } from "../data/errorDrills";
+import type { ErrorCategory, TranslationPractice } from "../data/errorDrills";
 
 type TranslationWorkspaceProps = {
   lessonNumber: number;
   categories: ErrorCategory[];
+  practiceMode: TranslationPractice["mode"];
   answers: Record<string, string>;
   saved: boolean;
   onAnswerChange: (drillId: string, value: string) => void;
@@ -23,6 +24,7 @@ type Detail = "focus" | "original";
 export function TranslationWorkspace({
   lessonNumber,
   categories,
+  practiceMode,
   answers,
   saved,
   onAnswerChange,
@@ -55,8 +57,14 @@ export function TranslationWorkspace({
     <div className="translate-panel translation-workspace">
       <div className="translation-workspace__header">
         <div>
-          <p className="panel-label">CHINESE TO ENGLISH · ERROR-LED PRACTICE</p>
-          <h4>围绕你的高频错因做专项练习</h4>
+          <p className="panel-label">
+            CHINESE TO ENGLISH · {practiceMode === "error" ? "ERROR-LED" : "CORE PATTERN"} PRACTICE
+          </p>
+          <h4>
+            {practiceMode === "error"
+              ? "围绕你的高频错因做专项练习"
+              : "用本课重点句式做专项练习"}
+          </h4>
         </div>
         <Button
           className={saved ? "saved" : "save-answers"}
@@ -70,27 +78,31 @@ export function TranslationWorkspace({
       </div>
 
       <p className="translation-intro">
-        只练当前 Lesson
-        中与你高频错因对应的原句。先完成翻译，需要时再查看提示或原文。
+        {practiceMode === "error"
+          ? "只练当前 Lesson 中与你高频错因对应的原句。"
+          : "本课没有匹配的错因专项，以下句子均选自本课课文。"}
+        先完成翻译，需要时再查看提示或原文。
       </p>
 
       {selectedCategory ? (
         <>
-          <div className="error-category-tabs" aria-label="错题类别">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                className={
-                  category.id === selectedCategory.id ? "selected" : ""
-                }
-                variant="outlined"
-                size="small"
-                onClick={() => setSelectedCategoryId(category.id)}
-              >
-                {category.title}
-              </Button>
-            ))}
-          </div>
+          {categories.length > 1 && (
+            <div className="error-category-tabs" aria-label="错题类别">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  className={
+                    category.id === selectedCategory.id ? "selected" : ""
+                  }
+                  variant="outlined"
+                  size="small"
+                  onClick={() => setSelectedCategoryId(category.id)}
+                >
+                  {category.title}
+                </Button>
+              ))}
+            </div>
+          )}
 
           <div className="category-summary">
             <b>{selectedCategory.title}</b>
@@ -138,7 +150,7 @@ export function TranslationWorkspace({
         </>
       ) : (
         <div className="translation-empty">
-          <b>本课暂无错因专项</b>
+          <b>本课暂无专项练习</b>
           <span>
             当前 Lesson 的原文中没有筛出与你高频错因对应的句子；不从其他课补题。
           </span>

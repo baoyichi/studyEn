@@ -12,6 +12,11 @@ export type ErrorCategory = {
   drills: ErrorDrill[];
 };
 
+export type TranslationPractice = {
+  categories: ErrorCategory[];
+  mode: "error" | "core";
+};
+
 // Sentences are transcribed from the supplied NCE 1 PDF, Lessons 73–143.
 export const errorCategories: ErrorCategory[] = [
   {
@@ -204,6 +209,190 @@ export const errorCategories: ErrorCategory[] = [
   },
 ];
 
+const lessonCoreDrills: Record<number, ErrorDrill> = {
+  77: {
+    id: "core-77",
+    chinese: "我必须现在就见牙科医生，护士。",
+    english: "I must see the dentist now, nurse.",
+    focus: "must + 动词原形，表达必须立刻做的事。",
+  },
+  79: {
+    id: "core-79",
+    chinese: "我们的茶叶和咖啡不多了，糖和果酱也没有了。",
+    english:
+      "We haven't got much tea or coffee, and we haven't got any sugar or jam.",
+    focus: "much 用于不可数名词；否定句中用 any。",
+  },
+  81: {
+    id: "core-81",
+    chinese: "今晚你们又要吃烤牛肉和土豆了！",
+    english: "You're going to have roast beef and potatoes again tonight!",
+    focus: "be going to + 动词原形，表示按计划或预期会发生的事。",
+  },
+  83: {
+    id: "core-83",
+    chinese: "我已经吃过午饭了。",
+    english: "I've already had lunch.",
+    focus: "现在完成时 have/has + 过去分词；already 放在助动词后。",
+  },
+  85: {
+    id: "core-85",
+    chinese: "肯，你去过那里吗？",
+    english: "Have you ever been there, Ken?",
+    focus: "Have you ever + 过去分词…? 用于询问经历。",
+  },
+  87: {
+    id: "core-87",
+    chinese: "没有，他们还在修理它。",
+    english: "No, they're still working on it.",
+    focus: "现在进行时表示仍在进行；work on 表示“修理、处理”。",
+  },
+  89: {
+    id: "core-89",
+    chinese: "我已经在这里住了20年了。",
+    english: "I've lived here for twenty years.",
+    focus: "现在完成时 + for + 时间段，表示持续至今。",
+  },
+  91: {
+    id: "core-91",
+    chinese: "伊恩已经把他的房子卖掉了吗？",
+    english: "Has Ian sold his house yet?",
+    focus: "现在完成时的一般疑问句；yet 常用于疑问句和否定句。",
+  },
+  93: {
+    id: "core-93",
+    chinese: "他已经去过世界上几乎每一个国家。",
+    english: "He has already been to nearly every country in the world.",
+    focus: "have been to 表示“去过并已回来”的经历。",
+  },
+  95: {
+    id: "core-95",
+    chinese: "肯，我们现在最好回到车站去。",
+    english: "We had better go back to the station now, Ken.",
+    focus: "had better + 动词原形，表示“最好做某事”。",
+  },
+  97: {
+    id: "core-97",
+    chinese: "几天前我把一只手提箱忘在开往伦敦的火车上了。",
+    english: "I left a suitcase on the train to London the other day.",
+    focus: "leave + 物 + 地点，表示“把某物遗忘在某处”。",
+  },
+  99: {
+    id: "core-99",
+    chinese: "我想最好请医生来给你看一下。",
+    english: "The doctor had better see you.",
+    focus: "had better + 动词原形，用于给出强烈建议。",
+  },
+  103: {
+    id: "core-103",
+    chinese: "那些题对我来说太难了。",
+    english: "They were too difficult for me.",
+    focus: "too + 形容词 + for somebody，表示“对某人来说太……”。",
+  },
+  105: {
+    id: "core-105",
+    chinese: "我要你把它重打一遍。",
+    english: "I want you to type it again.",
+    focus: "want somebody to do something，表示“要某人做某事”。",
+  },
+  107: {
+    id: "core-107",
+    chinese: "这件衣服对我来说太小了。",
+    english: "It's too small for me.",
+    focus: "too + 形容词 + for somebody，表达尺寸或程度不合适。",
+  },
+  111: {
+    id: "core-111",
+    chinese: "这种型号的比那种要便宜些。",
+    english: "This model's less expensive than that one.",
+    focus: "less + 形容词 + than，构成“较不……”的比较级。",
+  },
+  113: {
+    id: "core-113",
+    chinese: "我也不能。",
+    english: "Neither can I.",
+    focus: "Neither + 助动词 + 主语，表示“某人也不……”。",
+  },
+  115: {
+    id: "core-115",
+    chinese: "我肯定家里没有人。",
+    english: "I'm sure there's no one at home.",
+    focus: "there is/are + 名词，表示某处“有”；no one 表示“没有人”。",
+  },
+  117: {
+    id: "core-117",
+    chinese: "汤米已经把它们咽下去了！",
+    english: "Tommy had already swallowed them!",
+    focus: "过去完成时 had + 过去分词，表示过去某一时刻之前已完成。",
+  },
+  119: {
+    id: "core-119",
+    chinese: "他们进到屋里后，走进了饭厅。",
+    english: "After they had entered the house, they went into the dining room.",
+    focus: "after 引导的从句用过去完成时，突出先发生的动作。",
+  },
+  121: {
+    id: "core-121",
+    chinese: "站在柜台后面的那位女士。",
+    english: "The lady who is standing behind the counter.",
+    focus: "who 引导定语从句，修饰表示人的先行词。",
+  },
+  123: {
+    id: "core-123",
+    chinese: "这是我们所乘的那条船。",
+    english: "That's the ship we travelled on.",
+    focus: "省略关系代词的定语从句；介词 on 留在句末。",
+  },
+  125: {
+    id: "core-125",
+    chinese: "我不得不每天给它浇水。",
+    english: "I had to water it every day.",
+    focus: "had to 是 have to 的过去式，表示过去“不得不”。",
+  },
+  127: {
+    id: "core-127",
+    chinese: "那一定是女演员卡伦·马什。",
+    english: "It must be Karen Marsh, the actress.",
+    focus: "must + 动词原形，表示对现在情况的肯定推测。",
+  },
+  129: {
+    id: "core-129",
+    chinese: "你刚才一定是以每小时70英里的速度开车。",
+    english: "You must have been driving at seventy miles an hour.",
+    focus: "must have been doing，表示对过去正在发生之事的肯定推测。",
+  },
+  131: {
+    id: "core-131",
+    chinese: "我们可能到国外去。",
+    english: "We may go abroad.",
+    focus: "may + 动词原形，表示不太确定的可能性。",
+  },
+  133: {
+    id: "core-133",
+    chinese: "她说她准备退休。",
+    english: "She said she was going to retire.",
+    focus: "间接引语中，was going to 表示当时的将来计划。",
+  },
+  135: {
+    id: "core-135",
+    chinese: "她说她得问问她的未婚夫。",
+    english: "She said she would have to ask her future husband.",
+    focus: "间接引语中，will have to 通常后移为 would have to。",
+  },
+  137: {
+    id: "core-137",
+    chinese: "要是我赢了许多钱，我给你买件貂皮大衣。",
+    english: "If I win a lot of money, I'll buy you a mink coat.",
+    focus: "第一条件句：if 从句用一般现在时，主句用 will。",
+  },
+  139: {
+    id: "core-139",
+    chinese: "我说过我6点到你家。",
+    english: "I said I would be at your house at six o'clock.",
+    focus: "过去语境中，will 常后移为 would。",
+  },
+};
+
 // A drill is available only in the lesson that contains its source sentence.
 // This prevents a current lesson from borrowing practice material from another one.
 const drillLessonNumbers: Record<string, number> = {
@@ -239,4 +428,28 @@ export function getErrorCategoriesForLesson(lessonNumber: number) {
       ),
     }))
     .filter((category) => category.drills.length > 0);
+}
+
+export function getTranslationPractice(
+  lessonNumber: number,
+): TranslationPractice {
+  const errorPractice = getErrorCategoriesForLesson(lessonNumber);
+  if (errorPractice.length > 0) {
+    return { categories: errorPractice, mode: "error" };
+  }
+
+  const coreDrill = lessonCoreDrills[lessonNumber];
+  return {
+    categories: coreDrill
+      ? [
+          {
+            id: `core-${lessonNumber}`,
+            title: "本课重点句式",
+            description: "本课没有匹配的错因专项，改练课文中的核心句式。",
+            drills: [coreDrill],
+          },
+        ]
+      : [],
+    mode: "core",
+  };
 }

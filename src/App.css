@@ -285,6 +285,49 @@
     serif;
   letter-spacing: -0.04em;
 }
+.speaking-workspace {
+  display: grid;
+  gap: 14px;
+  max-width: 900px;
+  padding: 18px;
+  border: 1px solid #e8e0d9;
+  border-radius: 10px;
+  background: #fffefa;
+}
+.speaking-workspace h4 {
+  margin: 4px 0 5px;
+  color: #6a483d;
+  font: 500 24px/1.15 "Newsreader", "PingFang SC", serif;
+}
+.speaking-workspace p:not(.panel-label) {
+  margin: 0;
+  color: #8f8882;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.speaking-workspace textarea {
+  min-height: 230px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid #ded7d1;
+  border-radius: 7px;
+  outline: 0;
+  color: #31434a;
+  background: #fff;
+  font: 500 14px/1.55 "Newsreader", "PingFang SC", serif;
+}
+.speaking-workspace textarea:focus {
+  border-color: #d98a71;
+  box-shadow: 0 0 0 3px #f8e4dc;
+}
+.speaking-workspace textarea::placeholder {
+  color: #bbb5af;
+  font: 12px/1.8 "PingFang SC", sans-serif;
+}
+.speaking-workspace .save-answers,
+.speaking-workspace .saved {
+  justify-self: start;
+}
 .listen-grid {
   display: grid;
   grid-template-columns: 1.12fr 0.88fr;

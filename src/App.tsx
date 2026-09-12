@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
+  Button,
   Box,
   CssBaseline,
   Drawer,
@@ -13,6 +14,7 @@ import {
 } from "@mui/material";
 import HeadphonesRoundedIcon from "@mui/icons-material/HeadphonesRounded";
 import TranslateRoundedIcon from "@mui/icons-material/TranslateRounded";
+import MicRoundedIcon from "@mui/icons-material/MicRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
@@ -270,7 +272,7 @@ const theme = createTheme({
 
 export default function App() {
   const [number, setNumber] = useState(getTodayLessonNumber),
-    [tab, setTab] = useState<"listen" | "translate">(() =>
+    [tab, setTab] = useState<"listen" | "translate" | "speaking">(() =>
       getTodaySchedule()?.review ? "translate" : "listen",
     ),
     [followingTodayPlan, setFollowingTodayPlan] = useState(() =>
@@ -284,7 +286,8 @@ export default function App() {
     [articleLanguage, setArticleLanguage] = useState<"english" | "chinese">(
       "english",
     ),
-    [savedLesson, setSavedLesson] = useState<number>();
+    [savedLesson, setSavedLesson] = useState<number>(),
+    [savedSpeakingDate, setSavedSpeakingDate] = useState<string>();
   const [checks, setChecks] = useState<Record<string, Task[]>>(() => {
     try {
       return JSON.parse(localStorage.getItem("nce1-checks") ?? "{}");
@@ -299,6 +302,15 @@ export default function App() {
       return JSON.parse(
         localStorage.getItem("nce1-translation-answers") ?? "{}",
       );
+    } catch {
+      return {};
+    }
+  });
+  const [freeSpeakingNotes, setFreeSpeakingNotes] = useState<
+    Record<string, string>
+  >(() => {
+    try {
+      return JSON.parse(localStorage.getItem("nce1-free-speaking-notes") ?? "{}");
     } catch {
       return {};
     }
@@ -324,6 +336,7 @@ export default function App() {
     ? todaySchedule
     : selectedLessonSchedule;
   const isReviewDay = followingTodayPlan && Boolean(todaySchedule?.review);
+  const speakingDateKey = key(displayedSchedule?.date ?? new Date());
   const articleImage = `/lesson-pages/l${lesson.number}-${articleLanguage === "english" ? "en" : "zh"}.jpg`;
   useEffect(() => {
     localStorage.setItem("nce1-checks", JSON.stringify(checks));
@@ -334,6 +347,12 @@ export default function App() {
       JSON.stringify(translationAnswers),
     );
   }, [translationAnswers]);
+  useEffect(() => {
+    localStorage.setItem(
+      "nce1-free-speaking-notes",
+      JSON.stringify(freeSpeakingNotes),
+    );
+  }, [freeSpeakingNotes]);
   useEffect(() => {
     let disposed = false;
     const init = () => {
@@ -435,6 +454,13 @@ export default function App() {
     );
     setSavedLesson(lesson.number);
   };
+  const saveSpeakingNotes = () => {
+    localStorage.setItem(
+      "nce1-free-speaking-notes",
+      JSON.stringify(freeSpeakingNotes),
+    );
+    setSavedSpeakingDate(speakingDateKey);
+  };
   const complete = schedule.filter((item) => {
     const expectedTaskCount = item.review ? 1 : tasks.length;
     return (checks[key(item.date)] ?? []).length === expectedTaskCount;
@@ -523,6 +549,12 @@ export default function App() {
               onClick={() => setTab("translate")}
             >
               <TranslateRoundedIcon /> 汉译英
+            </button>
+            <button
+              className={tab === "speaking" ? "active" : ""}
+              onClick={() => setTab("speaking")}
+            >
+              <MicRoundedIcon /> 自由口语
             </button>
           </div>
           <article className="lesson-card">
@@ -625,7 +657,7 @@ export default function App() {
                   )}
                 </aside>
               </div>
-            ) : (
+            ) : tab === "translate" ? (
               <TranslationWorkspace
                 lessonNumber={lesson.number}
                 categories={translationPractice.categories}
@@ -635,6 +667,44 @@ export default function App() {
                 onAnswerChange={updateAnswer}
                 onSave={saveAnswers}
               />
+            ) : (
+              <section className="speaking-workspace">
+                <div>
+                  <p className="panel-label">FREE SPEAKING · DAILY NOTE</p>
+                  <h4>自由口语</h4>
+                  <p>
+                    把今天的自由表达转写下来；可记录想说的话、卡住的地方和更自然的改写。
+                  </p>
+                </div>
+                <textarea
+                  value={freeSpeakingNotes[speakingDateKey] ?? ""}
+                  onChange={(event) =>
+                    setFreeSpeakingNotes((notes) => ({
+                      ...notes,
+                      [speakingDateKey]: event.target.value,
+                    }))
+                  }
+                  placeholder="今天我想自由表达的内容：\n\n我卡住或说错的地方：\n\n更自然的改写："
+                  aria-label="当天自由口语转写"
+                />
+                <Button
+                  className={
+                    savedSpeakingDate === speakingDateKey
+                      ? "saved"
+                      : "save-answers"
+                  }
+                  variant="outlined"
+                  size="small"
+                  onClick={saveSpeakingNotes}
+                  startIcon={
+                    savedSpeakingDate === speakingDateKey ? (
+                      <CheckRoundedIcon />
+                    ) : undefined
+                  }
+                >
+                  {savedSpeakingDate === speakingDateKey ? "已保存" : "保存今日口语"}
+                </Button>
+              </section>
             )}
           </article>
         </section>

@@ -34,7 +34,11 @@ declare global {
   }
 }
 type Task =
-  "listening" | "translation" | "retelling" | "speaking" | "mistakeReview";
+  | "listening"
+  | "translation"
+  | "retelling"
+  | "speaking"
+  | "mistakeReview";
 type Lesson = {
   number: number;
   title: string;
@@ -310,7 +314,9 @@ export default function App() {
     Record<string, string>
   >(() => {
     try {
-      return JSON.parse(localStorage.getItem("nce1-free-speaking-notes") ?? "{}");
+      return JSON.parse(
+        localStorage.getItem("nce1-free-speaking-notes") ?? "{}",
+      );
     } catch {
       return {};
     }
@@ -321,7 +327,9 @@ export default function App() {
     segmentEndTime = useRef(lessonAudioStarts[75]),
     pendingPlay = useRef(false);
   const lesson = lessons.find((x) => x.number === number) ?? lessons[0];
-  const lessonIndex = lessons.findIndex((item) => item.number === lesson.number);
+  const lessonIndex = lessons.findIndex(
+    (item) => item.number === lesson.number,
+  );
   const nextLesson = lessons[lessonIndex + 1];
   const audioStartTime = lessonAudioStarts[lesson.number];
   const audioEndTime = nextLesson
@@ -672,9 +680,7 @@ export default function App() {
                 <div>
                   <p className="panel-label">FREE SPEAKING · DAILY NOTE</p>
                   <h4>自由口语</h4>
-                  <p>
-                    把今天的自由表达转写下来；可记录想说的话、卡住的地方和更自然的改写。
-                  </p>
+                  <p>把今天的自由表达转写下来。</p>
                 </div>
                 <textarea
                   value={freeSpeakingNotes[speakingDateKey] ?? ""}
@@ -684,7 +690,7 @@ export default function App() {
                       [speakingDateKey]: event.target.value,
                     }))
                   }
-                  placeholder="今天我想自由表达的内容：\n\n我卡住或说错的地方：\n\n更自然的改写："
+                  placeholder=""
                   aria-label="当天自由口语转写"
                 />
                 <Button
@@ -702,7 +708,9 @@ export default function App() {
                     ) : undefined
                   }
                 >
-                  {savedSpeakingDate === speakingDateKey ? "已保存" : "保存今日口语"}
+                  {savedSpeakingDate === speakingDateKey
+                    ? "已保存"
+                    : "保存今日口语"}
                 </Button>
               </section>
             )}
@@ -750,7 +758,8 @@ export default function App() {
           </h2>
           <span>
             {lessons.length} 个学习日 ·
-            {schedule.filter((item) => item.review).length} 个复习日 · 每日 4 项小完成
+            {schedule.filter((item) => item.review).length} 个复习日 · 每日 4
+            项小完成
           </span>
         </section>
         <footer>为持续而设计 · 每一次勾选都算数</footer>
@@ -837,13 +846,13 @@ function Month({
         <h3>
           2026 <b>{month + 1}月</b>
         </h3>
-          <span>
-            {month === start.getMonth()
-              ? "开始"
-              : month === end.getMonth()
-                ? "收尾"
-                : "坚持"}
-          </span>
+        <span>
+          {month === start.getMonth()
+            ? "开始"
+            : month === end.getMonth()
+              ? "收尾"
+              : "坚持"}
+        </span>
       </header>
       <div className="weekdays">
         {weekdays.map((x) => (
